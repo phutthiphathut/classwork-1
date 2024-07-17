@@ -14,7 +14,7 @@
       .modal {
         display: none;
         position: fixed;
-        z-index: 1;
+        z-index: 111;
         left: 0;
         top: 0;
         width: 100%;
@@ -67,6 +67,69 @@
       .btn-danger {
         background-color: #dc3545;
       }
+      .summary-detail {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .summary-detail-item span {
+        background-color: initial;
+        background-image: linear-gradient(-180deg, #9c745c, #ecdedb);
+        border-radius: 6px;
+        box-shadow: rgba(0, 0, 0, 0.1) 0 2px 4px;
+        color: #ffffff;
+        cursor: pointer;
+        display: inline-block;
+        font-family: Inter, -apple-system, system-ui, Roboto, "Helvetica Neue",
+          Arial, sans-serif;
+        height: 40px;
+        line-height: 40px;
+        outline: 0;
+        overflow: hidden;
+        padding: 0 20px;
+        pointer-events: auto;
+        position: relative;
+        text-align: center;
+        touch-action: manipulation;
+        user-select: none;
+        -webkit-user-select: none;
+        vertical-align: top;
+        white-space: nowrap;
+        width: 100%;
+        z-index: 9;
+        border: 0;
+        transition: box-shadow 0.2s;
+      }
+
+      .summary-detail-item {
+        margin: 10px;
+        align-items: center;
+        background-image: linear-gradient(
+          144deg,
+          #af40ff,
+          #5b42f3 50%,
+          #00ddeb
+        );
+        border: 0;
+        border-radius: 8px;
+        box-shadow: rgba(151, 65, 252, 0.2) 0 15px 30px -5px;
+        box-sizing: border-box;
+        color: #ffffff;
+        display: flex;
+        font-family: Phantomsans, sans-serif;
+        font-size: 20px;
+        justify-content: center;
+        line-height: 1em;
+        max-width: 100%;
+        min-width: 300px;
+        padding: 20px;
+        text-decoration: none;
+        user-select: none;
+        -webkit-user-select: none;
+        touch-action: manipulation;
+        white-space: nowrap;
+        cursor: pointer;
+      }
     </style>
   </head>
   <body>
@@ -87,10 +150,17 @@
           <!-- Product rows will be added here -->
         </tbody>
       </table>
-
-      <div>Total Gross Price: <span id="totalGrossPrice">0.00</span></div>
-      <div>Total VAT: <span id="totalVAT">0.00</span></div>
-      <div>Total Price: <span id="totalPrice">0.00</span></div>
+      <div class="summary-detail">
+        <div class="summary-detail-item">
+          Total Gross Price: <span id="totalGrossPrice">0.00</span>
+        </div>
+        <div class="summary-detail-item">
+          Total VAT: <span id="totalVAT">0.00</span>
+        </div>
+        <div class="summary-detail-item">
+          Total Price: <span id="totalPrice">0.00</span>
+        </div>
+      </div>
     </div>
 
     <!-- Modal -->
@@ -116,7 +186,7 @@
 
     <script>
       document.addEventListener("DOMContentLoaded", function () {
-        const VAT_RATE = 0.15; // Example VAT rate
+        const VAT_RATE = 0.07; // Example VAT rate
         const openModalButton = document.getElementById("openModal");
         const modal = document.getElementById("addProductModal");
         const closeModalButton = document.getElementsByClassName("close")[0];
@@ -213,7 +283,6 @@
           }
         });
       });
-    
     </script>
   </body>
 </html>
