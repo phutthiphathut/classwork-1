@@ -1,120 +1,218 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <title>Car Accessories</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Product Table</title>
     <style>
-      table {
-        border-collapse: collapse;
-        width: 60vw;
+      body {
+        font-family: Arial, sans-serif;
       }
-
-      th,
-      td {
-        text-align: left;
-        padding: 8px;
+      .container {
+        margin-top: 20px;
       }
-
-      tr:nth-child(even) {
-        background-color: #df0f0f;
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgb(0, 0, 0);
+        background-color: rgba(0, 0, 0, 0.4);
       }
-
-      .total {
+      .modal-content {
+        background-color: #fefefe;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+      }
+      .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
         font-weight: bold;
       }
+      .close:hover,
+      .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+      table,
+      th,
+      td {
+        border: 1px solid black;
+      }
+      th,
+      td {
+        padding: 10px;
+        text-align: left;
+      }
+      .btn {
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        cursor: pointer;
+      }
+      .btn-danger {
+        background-color: #dc3545;
+      }
     </style>
-    <script
-      src="https://code.jquery.com/jquery-3.6.0.min.js"
-      integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
-      crossorigin="anonymous"
-    ></script>
   </head>
-
   <body>
-    <h1>Car Accessories</h1>
+    <div class="container">
+      <button class="btn" id="openModal">Add Product</button>
 
-    <form id="accessoryForm">
-      <label for="accessory">Select an accessory:</label>
-      <select id="accessory" name="accessory">
-        <option value="p123">Car Cover</option>
-        <option value="p234">Seat Covers</option>
-        <option value="p456">Floor Mats</option>
-        <option value="p996">Door Visors</option>
-      </select>
-      <br />
-      <label for="amount">Amount:</label>
-      <input type="number" id="amount" name="amount" min="1" value="1" />
-      <br />
-      <button id="addButton" type="button">Add</button>
-    </form>
+      <table id="productTable">
+        <thead>
+          <tr>
+            <th>Product Name</th>
+            <th>Gross Price</th>
+            <th>VAT</th>
+            <th>Total Price</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Product rows will be added here -->
+        </tbody>
+      </table>
 
-    <h2>Product List</h2>
+      <div>Total Gross Price: <span id="totalGrossPrice">0.00</span></div>
+      <div>Total VAT: <span id="totalVAT">0.00</span></div>
+      <div>Total Price: <span id="totalPrice">0.00</span></div>
+    </div>
 
-    <table id="productList">
-      <tr>
-        <th>Accessory</th>
-        <th>Amount</th>
-        <th>Price</th>
-      </tr>
-    </table>
-
-    <p class="total">
-      Total Price: $
-      <span id="totalPrice">0</span>
-    </p>
-    VAT <span id="vatAmount"></span><br />
-    NET Price <span id="netPrice"></span>
+    <!-- Modal -->
+    <div id="addProductModal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <form id="addProductForm">
+          <div class="form-group">
+            <label for="accessory">Select an accessory:</label>
+            <select id="accessory" name="accessory">
+              <option value="p123">Car Cover</option>
+              <option value="p234">Seat Covers</option>
+              <option value="p456">Floor Mats</option>
+              <option value="p996">Door Visors</option>
+            </select>
+          </div>
+          <button type="button" class="btn" id="addProductButton">
+            Add Product
+          </button>
+        </form>
+      </div>
+    </div>
 
     <script>
-      $("#addButton").click(addToProductList);
+      document.addEventListener("DOMContentLoaded", function () {
+        const VAT_RATE = 0.15; // Example VAT rate
+        const openModalButton = document.getElementById("openModal");
+        const modal = document.getElementById("addProductModal");
+        const closeModalButton = document.getElementsByClassName("close")[0];
+        const addProductButton = document.getElementById("addProductButton");
+        const productTableBody = document
+          .getElementById("productTable")
+          .getElementsByTagName("tbody")[0];
 
-      function addToProductList() {
-        let accessory = $("#accessory");
-        let accessoryId = accessory.val();
-        let accessoryName = accessory.text();
-        let amount = $("#amount").val();
-        let price = calculatePrice(accessoryId);
+        openModalButton.onclick = function () {
+          modal.style.display = "block";
+        };
 
-        let table = $("#productList");
-        let row = $("<tr></tr>");
-        let accessoryCell = $("<td></td>").text(accessoryId);
-        let amountCell = $("<td></td>").text(amount);
-        let priceCell = $("<td></td>").text("$" + price);
+        closeModalButton.onclick = function () {
+          modal.style.display = "none";
+        };
 
-        row.append(accessoryCell, amountCell, priceCell);
-        table.append(row);
+        window.onclick = function (event) {
+          if (event.target == modal) {
+            modal.style.display = "none";
+          }
+        };
 
-        updateTotalPrice(price);
-      }
-
-      function calculatePrice(accessory) {
-        // Add your own logic to calculate the price based on the selected accessory
-        switch (accessory) {
-          case "p123":
-            return 50;
-          case "p234":
-            return 30;
-          case "p456":
-            return 20;
-          case "p996":
-            return 40;
-          default:
-            return 0;
+        function calculatePrice(accessory) {
+          switch (accessory) {
+            case "p123":
+              return 50;
+            case "p234":
+              return 30;
+            case "p456":
+              return 20;
+            case "p996":
+              return 40;
+            default:
+              return 0;
+          }
         }
-      }
-      var totalPrice = 0;
-      function updateTotalPrice(price) {
-        let totalPriceElement = $("#totalPrice");
-        let vatRate = 0.07;
-        
-        // var totalPrice = parseFloat(totalPriceElement.innerHTML);
-        console.log(totalPrice)
 
-        totalPrice += price;
-        let vatAmount = totalPrice * vatRate;
-        totalPriceElement.text(totalPrice.toFixed(2));
-        $("#vatAmount").text(vatAmount.toFixed(2));
-        $("#netPrice").text((totalPrice + vatAmount).toFixed(2));
-      }
+        function updateTotals() {
+          let totalGrossPrice = 0;
+          let totalVAT = 0;
+          let totalPrice = 0;
+
+          const rows = productTableBody.getElementsByTagName("tr");
+          for (let row of rows) {
+            const grossPrice = parseFloat(
+              row.getElementsByClassName("gross-price")[0].textContent
+            );
+            const vat = parseFloat(
+              row.getElementsByClassName("vat")[0].textContent
+            );
+            const price = parseFloat(
+              row.getElementsByClassName("total-price")[0].textContent
+            );
+
+            totalGrossPrice += grossPrice;
+            totalVAT += vat;
+            totalPrice += price;
+          }
+
+          document.getElementById("totalGrossPrice").textContent =
+            totalGrossPrice.toFixed(2);
+          document.getElementById("totalVAT").textContent = totalVAT.toFixed(2);
+          document.getElementById("totalPrice").textContent =
+            totalPrice.toFixed(2);
+        }
+
+        addProductButton.onclick = function () {
+          const selectedOption =
+            document.getElementById("accessory").selectedOptions[0];
+          const productId = selectedOption.value;
+          const productName = selectedOption.textContent;
+          const grossPrice = calculatePrice(productId);
+          const vat = grossPrice * VAT_RATE;
+          const totalPrice = grossPrice + vat;
+
+          const newRow = productTableBody.insertRow();
+          newRow.innerHTML = `
+                    <td>${productName}</td>
+                    <td class="gross-price">${grossPrice.toFixed(2)}</td>
+                    <td class="vat">${vat.toFixed(2)}</td>
+                    <td class="total-price">${totalPrice.toFixed(2)}</td>
+                    <td><button type="button" class="btn btn-danger delete-product">Delete</button></td>
+                `;
+
+          modal.style.display = "none";
+          updateTotals();
+        };
+
+        productTableBody.addEventListener("click", function (event) {
+          if (event.target.classList.contains("delete-product")) {
+            const row = event.target.closest("tr");
+            productTableBody.removeChild(row);
+            updateTotals();
+          }
+        });
+      });
     </script>
   </body>
 </html>
