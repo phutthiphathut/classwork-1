@@ -23,12 +23,30 @@ function App() {
 
     const newItem = {
       item: item.name,
-      ppu: ppuRef.current.value,
-      qty: qtyRef.current.value,
-      discount: discountRef.current.value,
+      ppu: parseFloat(ppuRef.current.value),
+      qty: parseInt(qtyRef.current.value),
+      discount: parseFloat(discountRef.current.value),
     };
 
-    setDataItems([...dataItems, newItem]);
+    setDataItems((prevItems) => {
+      const existingIndex = prevItems.findIndex(
+        (dataItem) =>
+          dataItem.item === newItem.item && dataItem.ppu === newItem.ppu
+      );
+
+      if (existingIndex !== -1) {
+        const updatedItems = [...prevItems];
+        const existingItem = updatedItems[existingIndex];
+        updatedItems[existingIndex] = {
+          ...existingItem,
+          qty: existingItem.qty + newItem.qty,
+          discount: existingItem.discount + newItem.discount,
+        };
+        return updatedItems;
+      } else {
+        return [...prevItems, newItem];
+      }
+    });
   };
 
   const clearDataItems = () => {
@@ -69,7 +87,7 @@ function App() {
                 type="number"
                 ref={ppuRef}
                 value={ppu}
-                onChange={(e) => setPpu(ppuRef.current.value)}
+                onChange={(e) => setPpu(parseFloat(ppuRef.current.value))}
               />
             </Col>
           </Row>
